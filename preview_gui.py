@@ -6,6 +6,9 @@ RESULT_RENAME = 1
 RESULT_REPLACE = 2
 
 
+
+
+
 class Preview:
     def set_photos(self, new_photo1=None, new_photo2=None, size=None):
         if size:
@@ -19,13 +22,15 @@ class Preview:
             self.photo1_lbl.image = img
 
             name = self.img1.file_name(new_photo1)
-            self.photo1_name_lbl.configure(text=name)
+            f_dir = picture_factory.dirs(new_photo1)
+            self.photo1_name_lbl.configure(text=str(name + "\n" + f_dir))
         else:
             self.photo1_lbl.configure(image=self.img1.pic())
             self.photo1_lbl.image = self.img1.pic()
 
             name = self.img1.file_name(self.photo1_path)
-            self.photo1_name_lbl.configure(text=name)
+            f_dir = picture_factory.dirs(self.photo1_path)
+            self.photo1_name_lbl.configure(text=str(name + "\n" + f_dir))
 
         # set photo 2
         if new_photo2:
@@ -35,7 +40,8 @@ class Preview:
             self.photo2_lbl.image = img
 
             name = self.img2.file_name(new_photo2)
-            self.photo2_name_lbl.configure(text=name)
+            f_dir = picture_factory.dirs(new_photo2)
+            self.photo2_name_lbl.configure(text=str(name + "\n" + f_dir))
         else:
             if self.photo2_path:
                 # self.img2 = pic(img_path=self.photo2_path, size=size)
@@ -43,10 +49,17 @@ class Preview:
                 self.photo2_lbl.image = self.img2.pic()
 
                 name = self.img2.file_name(self.photo2_path)
-                self.photo2_name_lbl.configure(text=name)
+                f_dir = picture_factory.dirs(self.photo2_path)
+                self.photo2_name_lbl.configure(text=str(name + "\n" + f_dir))
+
+    def select_dir_dis(self):
+        print("Preview : select_dir_dis : set_dir_dis = ", self.set_dir_dis.get())
+        self.result = self.set_dir_dis.get()
+        self.win.quit()
 
     def __init__(self, width=None, height=None, photo_1=None, photo_2=None, index=0):
         self.new_pic_name = StringVar()
+        self.set_dir_dis = StringVar()
         self.result = None
         if width is None:
             self.width = 500
@@ -89,19 +102,28 @@ class Preview:
         self.replace_btn = None
         self.skip_btn = None
 
+        self.set_dir_dis.set("")
+        self.new_pic_name.set("")
+
         # add widgets for preview mode and compare preview mode
         if photo_1 and photo_2 is None:
             self.frame = Frame(self.win)
-            self.frame.rowconfigure(0, weight=1)
-            self.frame.columnconfigure(0, weight=1)
 
             self.frame.grid(row=0, column=0, padx=10, pady=10, sticky=NSEW)
 
             self.photo1_lbl = Label(self.frame)
             self.photo1_name_lbl = Label(self.frame, text="name1")
+            self.photo1_dir_name_entry = Entry(self.frame, textvariable=self.set_dir_dis)
+
+            self.select_dir_name_btn = Button(self.frame, text="OK", command=self.select_dir_dis)
 
             self.photo1_lbl.grid(row=0, column=0, padx=10, pady=10, sticky=NSEW)
-            self.photo1_name_lbl.grid(row=1, column=0, padx=10, pady=10)
+            self.photo1_name_lbl.grid(row=1, column=0, padx=10, pady=10, sticky=EW)
+            self.photo1_dir_name_entry.grid(row=2, column=0, padx=10, pady=10, sticky=EW)
+
+            self.select_dir_name_btn.grid(row=0, column=1, ipadx=10, ipady=10, sticky=EW)
+
+            self.photo1_dir_name_entry.focus_set()
         elif photo_1 and photo_2:
             self.pic_frame = Frame(self.win)
             self.pic_frame.grid(row=0, column=0, padx=10, pady=10, sticky=NSEW)
@@ -127,7 +149,7 @@ class Preview:
             name, exception = picture_factory.name(self.photo1_path).split('.', -1)
             s = (name + '_' + str(index) + '.' + exception)
             self.new_pic_name.set(s)
-            print('preview_gui : Preview : __init__ : new_pic_name = ', self.new_pic_name.get())
+            # print('preview_gui : Preview : __init__ : new_pic_name = ', self.new_pic_name.get())
 
             self.rename_txt = Entry(self.btn_frame, text=self.new_pic_name)
             self.rename_btn = Button(self.btn_frame, text="Rename", command=self.on_click_rename_btn)
@@ -144,7 +166,8 @@ class Preview:
     # remove this function and the call to protocol
     # then the close button will act normally
     def close_mod(self):
-        self.result = RESULT_SKIP, None
+        if self.photo1_path and self.photo2_path:
+            self.result = RESULT_SKIP, None
         self.win.quit()
 
     def on_click_rename_btn(self):

@@ -10,7 +10,10 @@ photo_sorter = None
 class PhotoSorter:
     def __init__(self):
         # variables
-        self.photos = getFiles.getPhotoFiles(source_dir.get())
+        self.photos_list_object = []
+        self.s_list = []
+        self.dir_date_name_list = []
+        self.photo_path_list = getFiles.getPhotoFiles(source_dir.get())
         # print('main_gui : PhotoSorter : out_dir = ', self.out_dir)
 
         if output_dir.get() == "":
@@ -18,10 +21,8 @@ class PhotoSorter:
         else:
             self.out_dir = output_dir.get()
 
-        self.s_list = []
-
     def get_photos(self):
-        return self.photos
+        return self.photo_path_list
 
     def sort_photos(self):
         if output_dir.get() == "":
@@ -30,24 +31,12 @@ class PhotoSorter:
             self.out_dir = output_dir.get()
 
         # get sorted photos path list
-        for file in self.photos:
-            p = picture_factory.Picture(file)
-
-            if p.take_date() is None:
-                new_path = str(self.out_dir + "/other/" + p.file_name())
-            else:
-                new_path = str(self.out_dir + "/" + p.take_date_per() + "/" + p.file_name())
-
-            # print('main_gui : PhotoSorter : sort_photos : new_path = ', new_path)
-            self.s_list.append(new_path)
+        for file in self.photo_path_list:
+            self.photos_list_object.append(picture_factory.Picture(file, self.out_dir))
 
         # copy files to dirs and get duplicates command
-        for i in range(len(self.s_list)):
-            print(self.s_list[i])
-            f1 = self.photos[i]
-            f2 = self.s_list[i]
-
-            picture_factory.copy(f1, f2)
+        for i in range(len(self.photos_list_object)):
+            self.photos_list_object[i].copy()
 
         print('PhotoSorter : sort_photos : Done')
 
@@ -73,7 +62,7 @@ def on_file_list_selected(event):
 
 
 def start_sorting():
-    if photo_sorter.photos is not None:
+    if photo_sorter.get_photos() is not None:
         photo_sorter.sort_photos()
 
 
@@ -101,7 +90,7 @@ def get_photos():
     photo_sorter = PhotoSorter()
 
     global photos
-    photos = photo_sorter.photos
+    photos = photo_sorter.photo_path_list
 
 
 if __name__ == '__main__':
