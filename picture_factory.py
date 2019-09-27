@@ -1,6 +1,5 @@
 from PIL import Image, ImageTk
 from shutil import copy2
-
 import os
 from preview_gui import Preview
 from preview_gui import RESULT_RENAME, RESULT_REPLACE, RESULT_SKIP
