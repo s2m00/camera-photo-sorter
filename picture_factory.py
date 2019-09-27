@@ -1,9 +1,6 @@
 from PIL import Image, ImageTk
 from shutil import copy2
-from shutil import move
-from shutil import copytree
-from shutil import disk_usage
-from shutil import rmtree
+
 import os
 from preview_gui import Preview
 from preview_gui import RESULT_RENAME, RESULT_REPLACE, RESULT_SKIP
