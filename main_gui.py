@@ -1,4 +1,5 @@
 from tkinter import *
+from tkinter.ttk import Progressbar
 import picture_factory
 import getFiles
 
@@ -8,9 +9,12 @@ source = "/home/s2m/PycharmProjects/SortPhotoFiles/1"
 photo_sorter = None
 
 
-def state(w, t, d):
-    print(str(w) + " " + str(t) + " " + str(d) )
-    sort_btn['text'] = str(w) + " " + str(t) + " " + str(d)
+def state(v, t, d):
+    print(str(v) + " " + str(t) + " " + str(d))
+    sort_btn['text'] = str(v) + " " + str(t) + " " + str(d)
+    process["maximum"] = t
+    process['value'] = v
+    win.update_idletasks()
 
 class PhotoSorter:
     def __init__(self):
@@ -158,6 +162,10 @@ if __name__ == '__main__':
     # define start sort button widget
     sort_btn = Button(win, text="Sort to dir", command=start_sorting)
 
+    # define process bar
+    process = Progressbar(win, length=100, value=0, orient=HORIZONTAL, mode='indeterminate')
+
+
     # add widgets
     source_dir_lbl.grid(row=0, column=0, columnspan=2, sticky=W, padx=10, pady=10)
     select_source_btn.grid(row=0, column=2)
@@ -167,7 +175,9 @@ if __name__ == '__main__':
 
     file_list_lst.grid(row=2, column=0, columnspan=3, rowspan=3, padx=5, sticky=NSEW)
 
-    sort_btn.grid(row=5, column=1)
+    sort_btn.grid(row=5, column=2)
+
+    process.grid(row=5, column=0, columnspan=2, padx=5, sticky=EW)
 
     file_list_lst.bind('<Double-Button-1>', on_file_list_double_click)
     file_list_lst.bind('<<ListboxSelect>>', on_file_list_selected)
