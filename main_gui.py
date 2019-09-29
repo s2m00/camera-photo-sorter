@@ -3,23 +3,42 @@ import picture_factory
 import getFiles
 
 # source = "/home/s2m/Desktop/1"
+source = "/home/s2m/PycharmProjects/SortPhotoFiles/1"
 
 photo_sorter = None
 
 
+def state(w, t, d):
+    print(str(w) + " " + str(t) + " " + str(d) )
+    sort_btn['text'] = str(w) + " " + str(t) + " " + str(d)
+
 class PhotoSorter:
     def __init__(self):
         # variables
+
+        self.sf = None
         self.photos_list_object = []
         self.s_list = []
         self.dir_date_name_list = []
         self.photo_path_list = getFiles.getPhotoFiles(source_dir.get())
+        self.process = 0
+        self.total = len(self.photo_path_list)
         # print('main_gui : PhotoSorter : out_dir = ', self.out_dir)
 
         if output_dir.get() == "":
             self.out_dir = source_dir.get() + "/out"
         else:
             self.out_dir = output_dir.get()
+
+    def __set_state(self, where, total):
+        self.process = where
+        self.total = total
+
+        if self.sf:
+            self.sf(self.process, self.total, "{:.4}%".format((self.process * 100 / self.total)))
+
+    def get_state(self, state_func):
+        self.sf = state_func
 
     def get_photos(self):
         return self.photo_path_list
@@ -37,6 +56,7 @@ class PhotoSorter:
         # copy files to dirs and get duplicates command
         for i in range(len(self.photos_list_object)):
             self.photos_list_object[i].copy()
+            self.__set_state(i+1, len(self.photos_list_object))
 
         print('PhotoSorter : sort_photos : Done')
 
@@ -63,6 +83,7 @@ def on_file_list_selected(event):
 
 def start_sorting():
     if photo_sorter.get_photos() is not None:
+        photo_sorter.get_state(state)
         photo_sorter.sort_photos()
 
 
