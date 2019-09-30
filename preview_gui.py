@@ -6,9 +6,6 @@ RESULT_RENAME = 1
 RESULT_REPLACE = 2
 
 
-
-
-
 class Preview:
     def set_photos(self, new_photo1=None, new_photo2=None, size=None):
         if size:
@@ -56,6 +53,14 @@ class Preview:
         print("Preview : select_dir_dis : set_dir_dis = ", self.set_dir_dis.get())
         self.result = self.set_dir_dis.get()
         self.win.quit()
+
+    # def on_key_down_photo1_dir_name_entry(self, event):
+    #     print("on_key_down_photo1_dir_name_entry : event = ", event)
+
+    def on_key_up_photo1_dir_name_entry(self, event):
+        # print("on_key_up_photo1_dir_name_entry : event = ", event)
+        if event.keycode == 36:
+            self.select_dir_dis()
 
     def __init__(self, width=None, height=None, photo_1=None, photo_2=None, index=0):
         self.new_pic_name = StringVar()
@@ -107,21 +112,26 @@ class Preview:
 
         # add widgets for preview mode and compare preview mode
         if photo_1 and photo_2 is None:
+
             self.frame = Frame(self.win)
 
-            self.frame.grid(row=0, column=0, padx=10, pady=10, sticky=NSEW)
+            self.frame.grid(row=0, column=0, padx=80, pady=80, sticky=NSEW)
 
             self.photo1_lbl = Label(self.frame)
             self.photo1_name_lbl = Label(self.frame, text="name1")
             self.photo1_dir_name_entry = Entry(self.frame, textvariable=self.set_dir_dis)
 
-            self.select_dir_name_btn = Button(self.frame, text="OK", command=self.select_dir_dis)
+            self.ok_select_dir_name_btn = Button(self.frame, text="OK", command=self.select_dir_dis)
 
             self.photo1_lbl.grid(row=0, column=0, padx=10, pady=10, sticky=NSEW)
             self.photo1_name_lbl.grid(row=1, column=0, padx=10, pady=10, sticky=EW)
             self.photo1_dir_name_entry.grid(row=2, column=0, padx=10, pady=10, sticky=EW)
 
-            self.select_dir_name_btn.grid(row=0, column=1, ipadx=10, ipady=10, sticky=EW)
+            self.photo1_dir_name_entry.focus_set()
+            # self.photo1_dir_name_entry.bind("<KeyPress>", self.on_key_down_photo1_dir_name_entry)
+            self.photo1_dir_name_entry.bind("<KeyRelease>", self.on_key_up_photo1_dir_name_entry)
+
+            self.ok_select_dir_name_btn.grid(row=3, column=0, ipadx=10, ipady=10)
 
             self.photo1_dir_name_entry.focus_set()
         elif photo_1 and photo_2:
