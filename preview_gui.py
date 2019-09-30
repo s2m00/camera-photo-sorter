@@ -23,6 +23,7 @@ class Preview:
             name = self.img1.file_name(new_photo1)
             f_dir = picture_factory.dirs(new_photo1)
             self.photo1_name_lbl.configure(text=str(name + "\n" + f_dir))
+
         else:
             self.photo1_lbl.configure(image=self.img1.pic())
             self.photo1_lbl.image = self.img1.pic()
@@ -30,7 +31,6 @@ class Preview:
             name = self.img1.file_name(self.photo1_path)
             f_dir = picture_factory.dirs(self.photo1_path)
             self.photo1_name_lbl.configure(text=str(name + "\n" + f_dir))
-
         # set photo 2
         if new_photo2:
             # load photo 2
@@ -121,19 +121,24 @@ class Preview:
 
             self.photo1_lbl = Label(self.frame)
             self.photo1_name_lbl = Label(self.frame, text="name1")
+            self.photo1_creation_date_lbl = Label(self.frame, text="creation date1")
             self.photo1_dir_name_entry = Entry(self.frame, textvariable=self.set_dir_dis)
 
             self.ok_select_dir_name_btn = Button(self.frame, text="OK", command=self.select_dir_dis)
 
             self.photo1_lbl.grid(row=0, column=0, padx=10, pady=10, sticky=NSEW)
             self.photo1_name_lbl.grid(row=1, column=0, padx=10, pady=10, sticky=EW)
-            self.photo1_dir_name_entry.grid(row=2, column=0, padx=10, pady=10, sticky=EW)
+            self.photo1_creation_date_lbl.grid(row=2, column=0, padx=10, pady=10, sticky=EW)
+            self.photo1_dir_name_entry.grid(row=3, column=0, padx=10, pady=10, sticky=EW)
 
             self.photo1_dir_name_entry.focus_set()
             # self.photo1_dir_name_entry.bind("<KeyPress>", self.on_key_down_photo1_dir_name_entry)
             self.photo1_dir_name_entry.bind("<KeyRelease>", self.on_key_up_photo1_dir_name_entry)
 
-            self.ok_select_dir_name_btn.grid(row=3, column=0, ipadx=10, ipady=10)
+            self.ok_select_dir_name_btn.grid(row=4, column=0, ipadx=10, ipady=10)
+
+            f_c_d = picture_factory.Picture(self.photo1_path)
+            self.photo1_creation_date_lbl.configure(text=str(f_c_d.take_date_per()))
 
             self.photo1_dir_name_entry.focus_set()
         elif photo_1 and photo_2:
