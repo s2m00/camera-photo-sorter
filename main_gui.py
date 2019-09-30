@@ -1,10 +1,10 @@
+# -*- coding: utf-8 -*-
+#coding=UTF-*
+
 from tkinter import *
 from tkinter.ttk import Progressbar
 import picture_factory
 import getFiles
-
-# source = "/home/s2m/Desktop/1"
-source = "/home/s2m/PycharmProjects/SortPhotoFiles/1"
 
 photo_sorter = None
 
@@ -147,13 +147,13 @@ if __name__ == '__main__':
     source_dir_lbl = Label(win, textvariable=source_dir)
 
     # define select source dir button widget
-    select_source_btn = Button(text="Brows...", command=source_dir_selector)
+    select_source_btn = Button(text="Browse...", command=source_dir_selector)
 
     # define label widget
     output_dir_lbl = Label(win, textvariable=output_dir)
 
     # define select source dir button widget
-    select_output_btn = Button(text="Brows...", command=output_dir_selector)
+    select_output_btn = Button(text="Browse...", command=output_dir_selector)
 
     photos = []
 

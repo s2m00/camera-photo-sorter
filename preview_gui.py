@@ -1,5 +1,9 @@
+# -*- coding: utf-8 -*-
+
 from tkinter import *
 import picture_factory
+from bidi.algorithm import get_display
+import arabic_reshaper
 
 RESULT_SKIP = -1
 RESULT_RENAME = 1
