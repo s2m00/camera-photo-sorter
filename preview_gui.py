@@ -3,9 +3,10 @@
 from tkinter import *
 import picture_factory
 
-RESULT_SKIP = -1
-RESULT_RENAME = 1
-RESULT_REPLACE = 2
+RESULT_DELETE   = -2
+RESULT_SKIP     = -1
+RESULT_RENAME   = 1
+RESULT_REPLACE  = 2
 
 
 class Preview:
@@ -168,15 +169,20 @@ class Preview:
             self.new_pic_name.set(s)
             # print('preview_gui : Preview : __init__ : new_pic_name = ', self.new_pic_name.get())
 
+            self.delete_btn = Button(self.btn_frame, text="Delete", command=self.on_click_delete_btn)
+            self.replace_btn = Button(self.btn_frame, text="Replace", command=self.on_click_replace_btn)
             self.rename_txt = Entry(self.btn_frame, text=self.new_pic_name)
             self.rename_btn = Button(self.btn_frame, text="Rename", command=self.on_click_rename_btn)
-            self.replace_btn = Button(self.btn_frame, text="Replace", command=self.on_click_replace_btn)
             self.skip_btn = Button(self.btn_frame, text="Skip", command=self.on_click_skip_btn)
 
-            self.rename_txt.grid(row=0, column=1, padx=10, pady=10, sticky=EW)
-            self.replace_btn.grid(row=1, column=0, padx=10, pady=10, sticky=NSEW)
-            self.rename_btn.grid(row=1, column=1, padx=20, pady=10, sticky=NSEW)
-            self.skip_btn.grid(row=1, column=2, padx=20, pady=10, sticky=NSEW)
+            self.rename_txt.grid(row=0, column=2, padx=10, pady=10, sticky=EW)
+
+            self.delete_btn.grid(row=1, column=0, padx=20, pady=10, sticky=EW)
+            self.replace_btn.grid(row=1, column=1, padx=10, pady=10, sticky=EW)
+            self.rename_btn.grid(row=1, column=2, padx=20, pady=10, sticky=EW)
+            self.skip_btn.grid(row=1, column=3, padx=20, pady=10, sticky=EW)
+
+            self.skip_btn.focus_set()
 
         self.set_photos(new_photo1=photo_1, new_photo2=photo_2)
 
@@ -197,4 +203,8 @@ class Preview:
 
     def on_click_skip_btn(self):
         self.result = RESULT_SKIP, None
+        self.win.quit()
+
+    def on_click_delete_btn(self):
+        self.result = RESULT_DELETE, None
         self.win.quit()

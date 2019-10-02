@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#coding=UTF-*
+# coding=UTF-*
 
 from tkinter import *
 from tkinter.ttk import Progressbar
@@ -11,10 +11,16 @@ photo_sorter = None
 
 def state(v, t, d):
     print(str(v) + " " + str(t) + " " + str(d))
-    sort_btn['text'] = str(v) + " " + str(t) + " " + str(d)
+    sort_state_lbl['text'] = str(v) + " " + str(t) + " " + str(d)
     process["maximum"] = t
     process['value'] = v
     win.update_idletasks()
+
+    if v == t:
+        sort_btn['text'] = "Done!"
+        sort_btn['text'] = "Sort to dir"
+        sort_btn['state'] = NORMAL
+
 
 class PhotoSorter:
     def __init__(self):
@@ -26,7 +32,8 @@ class PhotoSorter:
         self.dir_date_name_list = []
         self.photo_path_list = getFiles.getPhotoFiles(source_dir.get())
         self.process = 0
-        self.total = len(self.photo_path_list)
+        if self.photo_path_list:
+            self.total = len(self.photo_path_list)
         # print('main_gui : PhotoSorter : out_dir = ', self.out_dir)
 
         if output_dir.get() == "":
@@ -60,15 +67,16 @@ class PhotoSorter:
         # copy files to dirs and get duplicates command
         for i in range(len(self.photos_list_object)):
             self.photos_list_object[i].copy()
-            self.__set_state(i+1, len(self.photos_list_object))
+            self.__set_state(i + 1, len(self.photos_list_object))
 
-        print('PhotoSorter : sort_photos : Done')
+        print('main_gui : PhotoSorter : sort_photos : Done')
 
 
 def load_list():
     file_list_lst.delete(0, END)
-    for p in photos:
-        file_list_lst.insert(END, p)
+    if photos:
+        for p in photos:
+            file_list_lst.insert(END, p)
 
 
 def on_file_list_double_click(event):
@@ -78,6 +86,16 @@ def on_file_list_double_click(event):
     picture_factory.request_view(photos[selected_item])
 
     source_dir_lbl['text'] = file_list_lst.get(selected_item)
+
+
+# TODO: new way for set or rename sorted dir
+# TODO: sort all photos then new name or rename dir in new window if user requested :
+# TODO: in this window show five photo as random for help choice dir name
+
+def on_sort_btn_click(event):
+    sort_btn.grid_forget()
+    start_sorting()
+    sort_btn.grid(row=5, column=2)
 
 
 def on_file_list_selected(event):
@@ -133,9 +151,14 @@ if __name__ == '__main__':
     output_dir = StringVar()
 
     import os
+
     home = os.path.expanduser('~')
     source_dir.set(home + "/Pictures")
     output_dir.set(home + "/Pictures/out")
+
+    # for test
+    # source_dir.set(home + "/PycharmProjects/SortPhotoFiles/1")
+    # output_dir.set(home + "/PycharmProjects/SortPhotoFiles/2")
 
     # define file list widget
     scrollbar = Scrollbar(win, orient=VERTICAL)
@@ -159,12 +182,15 @@ if __name__ == '__main__':
 
     get_photos()
 
+    # define sort state widget
+    sort_state_lbl = Label(win, text="welcome")
+
     # define start sort button widget
-    sort_btn = Button(win, text="Sort to dir", command=start_sorting)
+    sort_btn = Button(win, text="Sort to dir")
+
 
     # define process bar
     process = Progressbar(win, length=100, value=0, orient=HORIZONTAL, mode='indeterminate')
-
 
     # add widgets
     source_dir_lbl.grid(row=0, column=0, columnspan=2, sticky=W, padx=10, pady=10)
@@ -175,12 +201,15 @@ if __name__ == '__main__':
 
     file_list_lst.grid(row=2, column=0, columnspan=3, rowspan=3, padx=5, sticky=NSEW)
 
+    sort_state_lbl.grid(row=5, column=2)
     sort_btn.grid(row=5, column=2)
 
     process.grid(row=5, column=0, columnspan=2, padx=5, sticky=EW)
 
     file_list_lst.bind('<Double-Button-1>', on_file_list_double_click)
     file_list_lst.bind('<<ListboxSelect>>', on_file_list_selected)
+
+    sort_btn.bind('<Button-1>', on_sort_btn_click)
 
     # load photo list into list widget
     load_list()

@@ -1,8 +1,9 @@
 from PIL import Image, ImageTk
 from shutil import copy2
+from shutil import move
 import os
 from preview_gui import Preview
-from preview_gui import RESULT_RENAME, RESULT_REPLACE, RESULT_SKIP
+from preview_gui import RESULT_RENAME, RESULT_REPLACE, RESULT_SKIP, RESULT_DELETE
 
 MIN = 0
 DEFAULT = 1
@@ -31,13 +32,19 @@ def dirs(path):
     else:
         return os.path.dirname(path)
 
+def take_date_time(file_name):
+    import FileMetaData
+    date_time = FileMetaData.get_image_take_date(file_name)
+    return date_time
+
+def picture_size(file_name):
+    return os.path.getsize(file_name)
 
 def name(path):
     if os.path.isfile(path):
         return os.path.basename(path)
     else:
         return os.path.dirname(path)
-
 
 def request_view(photo1=None, photo2=None, index=0):
     p = Preview(photo_1=photo1, photo_2=photo2, index=index)
@@ -46,12 +53,20 @@ def request_view(photo1=None, photo2=None, index=0):
     return p.result
 
 
-def _copy(source, target):
-    if os.path.isfile(target):
-        return False
-    else:
-        return copy2(source, target)
+# def _copy(source, target):
+#     if os.path.isfile(target):
+#         return False
+#     else:
+#         return copy2(source, target)
 
+def _copy(source, target, state=False):
+    if state:
+        return move(source, target)
+    else:
+        if os.path.isfile(target):
+            return False
+        else:
+            return move(source, target)
 
 class Picture:
     def __init__(self, img_path, out_dir=None, new_size=ULTRA):
@@ -71,7 +86,7 @@ class Picture:
 
     def take_date(self):
         import FileMetaData
-        date_time = FileMetaData.getImageTakedDate(self.__path)
+        date_time = FileMetaData.get_image_take_date(self.__path)
 
         if date_time:
             self.__take_time = date_time.replace(":", ":")[11:19]
@@ -114,6 +129,9 @@ class Picture:
         if new_size in range(len(SIZE)):
             self.__size = SIZE[new_size]
 
+    def picture_size(self):
+        return os.path.getsize(self.__path)
+
     def take_time(self):
         return self.__take_time
 
@@ -121,12 +139,17 @@ class Picture:
         import ConvertToPersian
         import jalali
 
+
+        # print('picture_factory : Picture : take_date_per : file = ', self.__path)
         # print('picture_factory : Picture : take_date_per : jalali_take_date = ', self.__take_date)
 
-        jalali_take_date = jalali.Gregorian(self.take_date()).persian_string_full_format()
+        file_date = self.take_date()
+        jalali_take_date = jalali.Gregorian(file_date).persian_string_full_format()
+
         # print('picture_factory : Picture : take_date_per : jalali_take_date = ', jalali_take_date)
         pic_take_date_per = ConvertToPersian.getPer(jalali_take_date)
         return pic_take_date_per
+
 
     def get_path(self):
         try:
@@ -170,16 +193,29 @@ class Picture:
         if target == source:
             return
 
+
+
         r = False
         index = 0
         while not r:
             r = _copy(source, target)
             if not r:
+                if take_date_time(source) == take_date_time(target) and take_date_time(source) is not None:
+                    if picture_size(source) == picture_size(target):
+                        return
+
                 res, new_name = request_view(source, target, index)
                 if res == RESULT_RENAME:
                     r = _copy(source, dirs(target) + "/" + new_name)
                 elif res == RESULT_REPLACE:
-                    r = True
+                    r = _copy(source, target, True)
                 elif res == RESULT_SKIP:
                     r = True
+                elif res == RESULT_DELETE:
+                    try:
+                        # print("Picture : copy : res == RESULT_DELETE : called.")
+                        os.remove(source)
+                        r = True
+                    except NameError:
+                        r = False
                 index += 1

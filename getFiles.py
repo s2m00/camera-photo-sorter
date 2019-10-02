@@ -9,19 +9,22 @@ def getPhotoFiles(dirName):
     # print('GetFiles : getListOfFiles : dirName = ', dirName)
     # create a list of file and sub directories
     # names in the given directory
-    listOfFile = os.listdir(dirName)
-    allFiles = list()
+    if not os.path.isdir(dirName):
+        return None
+
+    list_of_file = os.listdir(dirName)
+    all_files = list()
     # Iterate over all the entries
-    for entry in listOfFile:
+    for entry in list_of_file:
         # Create full path
         fullPath = os.path.join(dirName, entry)
         # If entry is a directory then get the list of files in this directory
         if os.path.isdir(fullPath):
-            allFiles = allFiles + getPhotoFiles(fullPath)
+            all_files = all_files + getPhotoFiles(fullPath)
         else:
-            allFiles.append(fullPath)
+            all_files.append(fullPath)
 
-    return photos(allFiles)
+    return photos(all_files)
 
 
 # return all photo files
