@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from tkinter import *
+from getFiles import get_file_size
 import picture_factory
 
 RESULT_DELETE   = -2
@@ -23,7 +24,8 @@ class Preview:
 
             name = self.img1.file_name(new_photo1)
             f_dir = picture_factory.dirs(new_photo1)
-            self.photo1_name_lbl.configure(text=str(name + "\n" + f_dir))
+            f_size = get_file_size(new_photo1)
+            self.photo1_name_lbl.configure(text=str(name + "\n" + f_dir + "\n" + str(f_size/1000) + " kb"))
 
         else:
             self.photo1_lbl.configure(image=self.img1.pic())
@@ -31,7 +33,8 @@ class Preview:
 
             name = self.img1.file_name(self.photo1_path)
             f_dir = picture_factory.dirs(self.photo1_path)
-            self.photo1_name_lbl.configure(text=str(name + "\n" + f_dir))
+            f_size = get_file_size(self.photo1_path)
+            self.photo1_name_lbl.configure(text=str(name + "\n" + f_dir + "\n" + str(f_size/1000) + " kb"))
         # set photo 2
         if new_photo2:
             # load photo 2
@@ -41,7 +44,8 @@ class Preview:
 
             name = self.img2.file_name(new_photo2)
             f_dir = picture_factory.dirs(new_photo2)
-            self.photo2_name_lbl.configure(text=str(name + "\n" + f_dir))
+            f_size = get_file_size(new_photo2)
+            self.photo2_name_lbl.configure(text=str(name + "\n" + f_dir + "\n" + str(f_size/1000) + " kb"))
         else:
             if self.photo2_path:
                 # self.img2 = pic(img_path=self.photo2_path, size=size)
@@ -50,7 +54,8 @@ class Preview:
 
                 name = self.img2.file_name(self.photo2_path)
                 f_dir = picture_factory.dirs(self.photo2_path)
-                self.photo2_name_lbl.configure(text=str(name + "\n" + f_dir))
+                f_size = get_file_size(self.photo2_path)
+                self.photo2_name_lbl.configure(text=str(name + "\n" + f_dir + "\n" + str(f_size/1000) + " kb"))
 
     def select_dir_dis(self):
         print("Preview : select_dir_dis : set_dir_dis = ", self.set_dir_dis.get())

@@ -165,7 +165,7 @@ class Picture:
 
         des = request_view(self.__path)
         if des:
-            return self.__out_dir + "/" + self.take_date_per() + "_" + des + "/" + self.file_name()
+            return self.__out_dir + "/" + self.take_date_per() + "ـ" + des + "/" + self.file_name()
         else:
             return self.__out_dir + "/" + self.take_date_per() + "/" + self.file_name()
 
@@ -190,6 +190,7 @@ class Picture:
         # print('Picture : source = ', source)
         # print('Picture : target = ', target)
 
+        # If the file is moving to its own folder
         if target == source:
             return
 
@@ -200,8 +201,16 @@ class Picture:
         while not r:
             r = _copy(source, target)
             if not r:
-                if take_date_time(source) == take_date_time(target) and take_date_time(source) is not None:
+                if take_date_time(source) is not None and take_date_time(source) == take_date_time(target):
                     if picture_size(source) == picture_size(target):
+                        print("picture_factory : Picture : copy : Duplicate file found -> ", source , " = ", target)
+                        try:
+                            os.remove(source)
+                            print("DELETED : ", source)
+                            r = True
+                        except NameError:
+                            print("FAILED DELETE : ", source)
+                            r = False
                         return
 
                 res, new_name = request_view(source, target, index)

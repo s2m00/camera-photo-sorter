@@ -39,8 +39,14 @@ def photos(files_list):
 
     return photo_list
 
+# return file size
+def get_file_size(file_name):
+    total_size = os.path.getsize(file_name)
+    return total_size
 
-def get_size(start_path='.'):
+
+# retorn directory total size
+def get_dir_size(start_path='.'):
     total_size = 0
     for dirpath, dirnames, filenames in os.walk(start_path):
         for f in filenames:
